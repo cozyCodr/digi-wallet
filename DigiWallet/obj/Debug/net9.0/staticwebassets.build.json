@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "VlgSmYFVFbNlifMhoXPDdnL3i99ZrxeWcx6XwO0o9B4=",
+  "Source": "DigiWallet",
+  "BasePath": "_content/DigiWallet",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
