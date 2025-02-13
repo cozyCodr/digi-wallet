@@ -1,0 +1,28 @@
+﻿services:
+  - type: web
+    name: digiwallet-api
+    env: docker
+    plan: starter
+    buildCommand: dotnet publish -c Release -o out
+    startCommand: dotnet out/DigiWallet.dll
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DB_HOST
+        value: your-db-host
+      - key: DB_PORT
+        value: 5432
+      - key: DB_DATABASE
+        value: digiwallet
+      - key: DB_USERNAME
+        sync: false  # Means you'll set this in Render dashboard
+      - key: DB_PASSWORD
+        sync: false  # Means you'll set this in Render dashboard
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_ISSUER
+        value: DigiWallet
+      - key: JWT_AUDIENCE
+        value: DigiWalletClient
+      - key: ALLOWED_ORIGINS
+        value: *
