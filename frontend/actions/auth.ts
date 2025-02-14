@@ -39,7 +39,7 @@ export const registerUser = async (credentials: any) => {
       body: JSON.stringify(credentials)
     });
     const data = await response.json();
-    if (response.ok) return
+    if (response.ok) return data;
     throw new Error(data?.message)
   }
   catch (error: any) {
