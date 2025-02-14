@@ -10,6 +10,7 @@ import { useTransactionStore } from "@/store/transaction"
 import { Spinner } from "./ui/spinner"
 import { useRouter } from "next/navigation"
 import { useProfileStore } from "@/store/profile"
+import { toast } from "sonner"
 
 export default function TopUpAccount() {
 
@@ -30,10 +31,10 @@ export default function TopUpAccount() {
       await getProfile();
       await getTransactions()
       resetFields()
-      alert("Topped up successfully")
+      toast.success("Topped up successfully")
     }
     else {
-      console.error("something went wrong")
+      toast.error("something went wrong")
     }
     setTopupLoading(false);
   }

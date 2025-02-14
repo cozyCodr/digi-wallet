@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { deleteAuthCookie, deleteCookie, loginUser, registerUser, setCookie } from '@/actions/auth';
 import { useRouter } from 'next/navigation';
 import { ICredentials } from '../types';
+import { toast } from 'sonner';
 
 interface AuthState {
   user: any | null;
@@ -30,7 +31,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
       throw new Error(response?.message)
     } catch (error: any) {
-      alert(error?.message)
+      toast.error(error?.message)
       set({ loading: false })
     }
   },
@@ -40,13 +41,13 @@ export const useAuthStore = create<AuthState>((set) => ({
       const response: any = await registerUser(credentials);
       if (response?.statusCode != null) {
         const { message } = response;
-        alert(message);
+        toast.success(message);
         set({ loading: false })
         return true;
       }
       throw new Error(response?.message)
     } catch (error: any) {
-      alert(error?.message)
+      toast.error(error?.message)
       set({ loading: false })
       return false;
     }
