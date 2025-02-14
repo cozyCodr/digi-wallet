@@ -11,9 +11,20 @@ import { User } from "lucide-react"
 import { Spinner } from "./ui/spinner"
 import { useRouter } from "next/navigation"
 import { useProfileStore } from "@/store/profile"
+import { toast } from "sonner" // Add toast for better error handling
 
 export default function TransferMoney() {
-  const { amount, setAmount, searchUser, getTransactions, setReceiverWalletId, setType, setDescription, transferMoney } = useTransactionStore()
+  const {
+    amount,
+    setAmount,
+    searchUser,
+    getTransactions,
+    setReceiverWalletId,
+    setType,
+    setDescription,
+    transferMoney
+  } = useTransactionStore()
+
   const [searchLoading, setSearchLoading] = useState(false);
   const [transferLoading, setTransferLoading] = useState(false);
   const [searchString, setSearchString] = useState("");
@@ -25,51 +36,83 @@ export default function TransferMoney() {
 
   const handleTransfer = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!selectedUser) return;
-    setTransferLoading(true)
-    if (selectedUser == null) {
-      alert("Please select a user you wish to send money to!")
+    if (!selectedUser) {
+      toast.error("Please select a user you wish to send money to!")
       return;
     }
-    setType("Transfer")
-    setDescription(`Transfer to ${selectedUser?.username}`)
-    setReceiverWalletId(selectedUser.walletId);
-    const responseOk = await transferMoney()
-    if (responseOk) {
-      // Reset
 
-      resetFields()
-      await getProfile()
-      await getTransactions()
-      alert("transaction completed successfully")
+    try {
+      setTransferLoading(true)
+      setType("Transfer")
+      setDescription(`Transfer to ${selectedUser?.username}`)
+      setReceiverWalletId(selectedUser.walletId);
+
+      const responseOk = await transferMoney()
+
+      if (responseOk) {
+        // Add delay between requests
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Use Promise.allSettled for parallel requests with error handling
+        const [profileResult, transactionsResult] = await Promise.allSettled([
+          getProfile(),
+          getTransactions()
+        ]);
+
+        // Check results and handle any failures
+        if (profileResult.status === 'rejected') {
+          console.error('Failed to refresh profile:', profileResult.reason);
+          toast.error('Profile refresh failed. Please reload the page.');
+        }
+
+        if (transactionsResult.status === 'rejected') {
+          console.error('Failed to refresh transactions:', transactionsResult.reason);
+          toast.error('Transaction list refresh failed. Please reload the page.');
+        }
+
+        // Show success message if transfer was successful
+        toast.success("Transaction completed successfully");
+        resetFields()
+      }
+    } catch (error) {
+      console.error('Transfer error:', error);
+      toast.error("Transaction failed. Please try again.");
+    } finally {
+      setTransferLoading(false);
     }
-    else {
-      console.error("something went wrong")
-    }
-    setTransferLoading(false);
   }
 
-  async function search() {
-    setSearchLoading(true);
-    const results = await searchUser(searchString);
-    setUsers(results);
-    setSearchLoading(false);
+  const search = async () => {
+    try {
+      setSearchLoading(true);
+      const results = await searchUser(searchString);
+      setUsers(results);
+    } catch (error) {
+      console.error('Search error:', error);
+      toast.error("Search failed. Please try again.");
+    } finally {
+      setSearchLoading(false);
+    }
   }
 
   function resetFields() {
     setReceiverWalletId("")
+    setSelectedUser(null);
     setAmount(0)
     setDescription("")
   }
 
-  // Set up search for 3 characters or more
+  // Set up debounced search for 3 characters or more
   useEffect(() => {
-    if (searchString.length >= 3) {
-      search();
-    }
-    else if (searchString.length == 0) {
-      setUsers([]);
-    }
+    const timeoutId = setTimeout(() => {
+      if (searchString.length >= 3) {
+        search();
+      } else if (searchString.length === 0) {
+        setUsers([]);
+      }
+    }, 300); // Add debounce delay
+
+    return () => clearTimeout(timeoutId);
   }, [searchString])
 
   return (

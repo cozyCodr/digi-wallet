@@ -1,4 +1,3 @@
-// middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
@@ -19,6 +18,11 @@ export async function middleware(request: NextRequest) {
   const cookieStore = await cookies()
   const { pathname } = request.nextUrl;
   const authCookie = cookieStore.get(COOKIE_NAME);
+
+  // Special check for root path
+  if (pathname === '/') {
+    return NextResponse.next();
+  }
 
   // Check if the path is public
   const isPublicPath = PUBLIC_PATHS.some(publicPath =>
@@ -41,4 +45,10 @@ export async function middleware(request: NextRequest) {
   }
 
   return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    '/((?!api|_next|_static|_vercel|favicon.ico|sitemap.xml).*)',
+  ],
 }

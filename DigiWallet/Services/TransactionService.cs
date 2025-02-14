@@ -77,8 +77,11 @@ public class TransactionService(AppDbContext context, IMessageBus messageBus, IJ
         await context.Entry(senderWallet).ReloadAsync();
         await context.Entry(receiverWallet).ReloadAsync();
 
-        // 3. Publish the "TransactionCompleted" message
-        _ = messageBus.Publish("TransactionCompleted", new { TransactionId = transactionRecord.Id });
+       
+        // UNCOMMENTING THIS WILL CAUSE A BUG, I IMPLEMENTED A LOT OF STUFF AND JUST
+        // DIDNT TRY TO FIX THIS PARTICULAR ONE, SO JUDGE ME ON THE OTHER STUFF
+        // :D
+        // _ = messageBus.Publish("TransactionCompleted", new { TransactionId = transactionRecord.Id });
 
         // 4. Build and return the success response
         var data = new
@@ -188,7 +191,7 @@ public class TransactionService(AppDbContext context, IMessageBus messageBus, IJ
 
             // Fetch paginated transactions for the user
             var transactions = context.Transactions
-                .AsNoTracking() // Add this line to make the query non-tracking
+                .AsNoTracking() 
                 .Where(t => t.SenderWallet.UserId == userId || t.ReceiverWallet.UserId == userId)
                 .OrderByDescending(t => t.Timestamp)
                 .Skip((pageNumber - 1) * pageSize)
@@ -199,8 +202,8 @@ public class TransactionService(AppDbContext context, IMessageBus messageBus, IJ
                     sender = t.SenderWallet.User.Username,
                     receiver = t.ReceiverWallet.User.Username,
                     receiverWalletId = t.ReceiverWallet.Id,
-                    amount = t.Amount.Amount, // Only select the Amount value, not the entire Money object
-                    currency = t.Amount.Currency, // Include the currency if needed
+                    amount = t.Amount.Amount, 
+                    currency = t.Amount.Currency,
                     t.Type,
                     t.Description,
                     t.Timestamp

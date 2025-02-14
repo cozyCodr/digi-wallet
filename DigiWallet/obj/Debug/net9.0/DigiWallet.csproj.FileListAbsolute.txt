@@ -282,3 +282,4 @@ C:\Users\IDEAPAD 5I\Documents\CODE\Personal Projects\wallet\DigiWallet\obj\Debug
 C:\Users\IDEAPAD 5I\Documents\CODE\Personal Projects\wallet\DigiWallet\obj\Debug\net9.0\ref\DigiWallet.dll
 C:\Users\IDEAPAD 5I\Documents\CODE\Personal Projects\wallet\DigiWallet\bin\Debug\net9.0\DotNetEnv.dll
 C:\Users\IDEAPAD 5I\Documents\CODE\Personal Projects\wallet\DigiWallet\bin\Debug\net9.0\Sprache.dll
+C:\Users\IDEAPAD 5I\Documents\CODE\Personal Projects\wallet\DigiWallet\obj\Debug\net9.0\DigiWallet.sourcelink.json
